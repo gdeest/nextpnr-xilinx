@@ -13,11 +13,6 @@
         pkgs = import nixpkgs { inherit system; };
         openxc7-packages = openxc7.packages.${system};
       in {
-        # devShell = pkgs.mkShell {
-        #   buildInputs =
-        #     [ openxc7-packages.prjxray nixpkgs.legacyPackages.${system}.yosys ];
-        # };
-
         packages.default = pkgs.stdenv.mkDerivation {
           pname = "nextpnr-xilinx";
           version = "0.7.0";
@@ -27,13 +22,13 @@
           nativeBuildInputs = [ pkgs.cmake pkgs.git ];
           buildInputs =
             [ pkgs.python310Packages.boost pkgs.python310 pkgs.eigen  pkgs.llvmPackages.openmp];
-            # FIXME: It seems that we _need_ to import OpenMP unconditionally here,
-            # but it does not make sense to me as OpenMP is part of the GCC runtime.
+            # FIXME: It seems that we _need_ to import OpenMP unconditionally
+            # here, but it does not make sense to me as OpenMP is part of the
+            # GCC runtime.
             #
-            # It seems that we are building with clang 16, so I understand why OpenMP
-            # isn't included.
-            # ++ (pkgs.lib.optional pkgs.stdenv.cc.isClang
-            #   [ pkgs.llvmPackages.openmp ]);
+            # It seems that we are building with clang 16, so I don't understand
+            # why the following fails: ++ (pkgs.lib.optional
+            # pkgs.stdenv.cc.isClang [ pkgs.llvmPackages.openmp ]);
 
           cmakeFlags = [
             "-DCURRENT_GIT_VERSION=${pkgs.lib.substring 0 7 self.rev}"
